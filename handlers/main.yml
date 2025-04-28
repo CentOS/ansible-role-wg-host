@@ -1,1 +1,9 @@
 # Defaults handlers for role wg-host
+#
+- name: restart_wg_tunnel
+  service:
+    name: "wg-quick@{{ item.interface }}"
+    state: restarted
+  with_items: "{{ wg_config_list }}"
+  loop_control:
+    label: "{{ item.interface }}"

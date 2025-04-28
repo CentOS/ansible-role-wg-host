@@ -7,4 +7,50 @@
     - "{{ ansible_distribution }}.yml"
   tags:
     - vars
+    - always
+
+- name: Ensuring wireguard is installed
+  yum:
+    name: wireguard-tools
+    state: latest
+
+- name: Configuring iptables rules
+  include_role:
+    name: iptables
+    tasks_from: custom-policy
+  vars:
+    iptables_policy_name: "{{ item.interface }}"
+    iptables_protocol: udp
+    iptables_port: "{{ item.udp_port }}"
+  with_items: "{{ wg_config_list }}"
+  when:
+    - item.udp_port is defined
+  loop_control:
+    label: "{{ item.interface }}"
+  tags:
+    - iptables
+
+- name: Configuring wireguard interfaces
+  template: 
+    src: etc/wireguard/wg.conf
+    dest: "/etc/wireguard/{{ item.interface }}.conf"
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - config
+  notify:
+    - restart_wg_tunnel
+  with_items: "{{ wg_config_list }}"
+  loop_control:
+    label: "{{ item.interface }}"
+
+- name: Starting wg tunnels
+  service:
+    name: "wg-quick@{{ item.interface }}"
+    state: started
+    enabled: True
+  with_items: "{{ wg_config_list }}"
+  loop_control:
+    label: "{{ item.interface }}"
 

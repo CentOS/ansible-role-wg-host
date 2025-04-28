@@ -1,1 +1,32 @@
 # Defaults variables for role wg-host
+#
+# this role will help you set up some wg interfaces on a host that can be used as wireguard server and/or client
+# Only difference is if we defined udp port (see below) or not and so which one is initiating connection
+# Client will be able to just connect to it to get access to local subnet (with our without NAT helper - see iptables role - forward/nat rules not managed by this role for subnet to subnet !)
+
+
+# To generate private/public keys, see 'wg genkey | tee -a myprivkey | wg pubkey | tee -a mypubkey'
+
+# variables
+# First example for wg0 : we are server so listening over udp
+# second example for wg1 : we are just client and ourselves connecting to a server but also declaring potential remote subnet we'd like to get access to
+#wg_config_list
+#  - interface: wg0
+#    private_key: boo
+#    tunnel_ip: 192.168.128.1/24
+#    udp_port: 56545 # if we define udp port we are server and so listening on udp 
+#    peer_list:
+#      - comment: client 1
+#        pubkey: foo
+#        tunnel_ip: 192.168.1.2
+#  - interface: wg1
+#    private_key: boo
+#    tunnel_ip: 172.16.25.2/16
+#    peer_list:
+#      - comment: connection to wg server
+#        pubkey: foo
+#        tunnel_ip: 172.16.25.1, 172.28.0.0/16 # we'll also encrypt through wg for remote subnets through tunnels
+#        tunnel_endpoint: my.remote.hostname:54555 # udp server that remote server is listening on 
+
+wg_config_list: [] 
+
