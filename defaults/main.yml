@@ -5,7 +5,10 @@
 # Client will be able to just connect to it to get access to local subnet (with our without NAT helper - see iptables role - forward/nat rules not managed by this role for subnet to subnet !)
 
 
-# To generate private/public keys, see 'wg genkey | tee -a myprivkey | wg pubkey | tee -a mypubkey'
+# To generate private/public keys, it's better to keep these in pkistore/wg and generate like this
+# host="my.host.com"
+# wg genkey| tee -a ${host}.priv | wg pubkey | tee -a ${host}.pub
+#
 
 # variables
 # First example for wg0 : we are server so listening over udp
